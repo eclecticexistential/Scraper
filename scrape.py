@@ -7,18 +7,22 @@ page_count = []
 
 
 def info_loop(url_link):
+    csv_file = open('zillow_scrape.csv', 'w')
+    csv_writer = csv.writer(csv_file)
     current_page = 1
-    get_data(url_link, current_page)
+    get_data(url_link, current_page, csv_writer)
     end_link = url_link[-6:]
     next_link = url_link[:-6]
-    while current_page < max(page_count):
-        current_page += 1
-        apple = next_link
-        apple += str(current_page) + "_p/" + end_link
-        get_data(apple, current_page)
+    if len(page_count) > 0:
+        while current_page < max(page_count):
+            current_page += 1
+            apple = next_link
+            apple += str(current_page) + "_p/" + end_link
+            get_data(apple, current_page, csv_writer)
+    csv_file.close()
 
 
-def get_data(url_link, current_page):
+def get_data(url_link, current_page, csv_writer):
     req_headers = {
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'accept-encoding': 'gzip, deflate, br',
@@ -35,25 +39,36 @@ def get_data(url_link, current_page):
         data = soup.find_all('span', {'class': 'zsg-photo-card-info'})
         addresses = soup.find_all('span', {'itemprop': 'address'})
         laugh = soup.find('ol', class_="zsg-pagination")
-        joy = laugh.find_all('li')
-        csv_file = open('zillow_scrape.csv', 'w')
-        csv_writer = csv.writer(csv_file)
-        if current_page == 1:
+        if laugh is not None and current_page == 1:
+            joy = laugh.find_all('li')
             for giggle in joy:
-                if giggle.text != "Next":
+                if giggle.text != "Next" and giggle.text != "...":
                     page_count.append(int(giggle.text))
+        if current_page == 1:
             csv_writer.writerow(['Price', 'Info', 'Location'])
         for key, price in enumerate(prices):
             csv_writer.writerow([price.text, data[key].text, addresses[key].text])
-        csv_file.close()
-        with open('zillow_scrape.csv') as csv_file:
-            reader = csv.reader(csv_file)
-            for row in reader:
-                print(row)
 
 
-info_loop('https://www.zillow.com/homes/for_sale/Louisville-KY/12455_rid/1-_beds/1-_baths/0-20000_price/0-79_mp/priced_sort/38.472406,-85.205842,37.856965,-86.143799_rect/9_zm/0_mmm/')  # _zm /2_p/0_mmm / <- to get next page /3_p to get next one
+def who_knew():
+    with open('zillow_scrape.csv') as csv_file:
+        reader = csv.reader(csv_file)
+        headers = next(reader)
+        for row in reader:
+            for key, info in enumerate(row):
+                if key == 2:
+                    zip_code = int(info[-3:])
+                    if zip_code not in [203, 208, 210, 211, 212]:
+                        goog_search = "https://www.google.com/search?client=firefox-b-1-ab&ei=L_iEW876EoXatAXtibWABw&q=zillow+"
+                        goog_end = "&gs_l=psy-ab.3..33i299k1.1528.1528.0.2517.1.1.0.0.0.0.460.460.4-1.1.0..1..0...1..64.psy-ab..0.1.456....0.yS0H9KLqlxk"
+                        divi = info.replace(" ", "+")
+                        tot_url = divi + "&oq=zillow+"+divi
+                        print(row)
+                        print(goog_search + tot_url + goog_end)
 
+
+info_loop('https://www.zillow.com/homes/for_sale/KY/house,townhouse_type/24_rid/1-_beds/1-_baths/0-25000_price/0-80_mp/brick_att/priced_sort/42.609706,-78.266602,32.722598,-93.273926_rect/5_zm/0_mmm/')
+who_knew()
 # source = requests.get('https://eclecticexistential.github.io').text
 # soup = BeautifulSoup(source, 'lxml')
 # csv_file = open('p_scrape.csv', 'w')
