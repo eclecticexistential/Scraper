@@ -1,24 +1,45 @@
 from bs4 import BeautifulSoup
 import requests, csv
 
-source = requests.get('http://eclecticexistential.github.io/').text
-soup = BeautifulSoup(source, 'lxml')
+req_headers = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'en-US,en;q=0.8',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+}
 
-csv_file = open('p_scrape.csv', 'w')
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(['Headline', 'Summary'])
+with requests.Session() as s:
+    url = 'https://www.zillow.com/homes/for_sale/Louisville-KY/12455_rid/1-_beds/1-_baths/0-20000_price/0-79_mp/priced_sort/38.472406,-85.205842,37.856965,-86.143799_rect/9_zm/0_mmm/'  #_zm /2_p/0_mmm / <- to get next page /3_p to get next one
+    r = s.get(url, headers=req_headers)
+    soup = BeautifulSoup(r.content, 'lxml')
+    prices = soup.find_all('span', {'class': 'zsg-photo-card-price'})
+    data = soup.find_all('span', {'class': 'zsg-photo-card-info'})
+    addresses = soup.find_all('span', {'itemprop': 'address'})
+    current_stats = {}
+    for key, price in enumerate(prices):
+        print(price.text, data[key].text, addresses[key].text)
+    #     current_stats[key] = [price.text, data[key].text, addresses[key].text]
+    # print(current_stats)
 
-for match in soup.find_all('div', class_='col'):
-    headline = match.h3.text
-    summary = match.p.text
-    csv_writer.writerow([headline, summary])
+# source = requests.get('https://eclecticexistential.github.io').text
+# soup = BeautifulSoup(source, 'lxml')
 
-csv_file.close()
+# csv_file = open('p_scrape.csv', 'w')
+# csv_writer = csv.writer(csv_file)
+# csv_writer.writerow(['Headline', 'Summary'])
 
-with open('p_scrape.csv') as csv_file:
-    reader = csv.reader(csv_file)
-    for row in reader:
-        print(row)
+# for match in soup.find_all('div', class_='col'):
+#     headline = match.h3.text
+#     summary = match.p.text
+#     csv_writer.writerow([headline, summary])
+#
+# csv_file.close()
+#
+# with open('p_scrape.csv') as csv_file:
+#     reader = csv.reader(csv_file)
+#     for row in reader:
+#         print(row)
 
 # to get embedded video:
 # -grab url from iframe
