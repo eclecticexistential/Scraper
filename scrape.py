@@ -59,15 +59,15 @@ def who_knew():
                 if key == 2:
                     zip_code = int(info[-3:])
                     if zip_code not in [203, 208, 210, 211, 212]:
-                        goog_search = "https://www.google.com/search?client=firefox-b-1-ab&ei=L_iEW876EoXatAXtibWABw&q=zillow+"
-                        goog_end = "&gs_l=psy-ab.3..33i299k1.1528.1528.0.2517.1.1.0.0.0.0.460.460.4-1.1.0..1..0...1..64.psy-ab..0.1.456....0.yS0H9KLqlxk"
-                        divi = info.replace(" ", "+")
-                        tot_url = divi + "&oq=zillow+"+divi
+                        # goog_search = "https://www.google.com/search?client=firefox-b-1-ab&ei=L_iEW876EoXatAXtibWABw&q=zillow+"
+                        # goog_end = "&gs_l=psy-ab.3..33i299k1.1528.1528.0.2517.1.1.0.0.0.0.460.460.4-1.1.0..1..0...1..64.psy-ab..0.1.456....0.yS0H9KLqlxk"
+                        # divi = info.replace(" ", "+")
+                        # tot_url = divi + "&oq=zillow+"+divi
                         print(row)
-                        print(goog_search + tot_url + goog_end)
+                        # print(goog_search + tot_url + goog_end)
 
 
-info_loop('https://www.zillow.com/homes/for_sale/KY/house,townhouse_type/24_rid/1-_beds/1-_baths/0-25000_price/0-80_mp/brick_att/priced_sort/42.609706,-78.266602,32.722598,-93.273926_rect/5_zm/0_mmm/')
+info_loop('https://www.zillow.com/homes/for_sale/KY/house,land,townhouse_type/24_rid/1-_beds/1-_baths/0-17000_price/0-68_mp/priced_sort/42.884014,-77.014161,32.481963,-92.021485_rect/5_zm/0_mmm/')
 who_knew()
 # source = requests.get('https://eclecticexistential.github.io').text
 # soup = BeautifulSoup(source, 'lxml')
