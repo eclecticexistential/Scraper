@@ -7,7 +7,7 @@ def runThis() :
 	source = requests.get('https://www.kylottery.com/apps/draw_games/powerball/powerball_pastwinning.html').text
 	soup = BeautifulSoup(source, 'lxml')
 	tableAll = soup.find('table', class_="greeStyleLeftNoLines")
-	csv_file = open('lot_scrape.csv', 'w')
+	csv_file = open('lot_scrape2.csv', 'w')
 	csv_writer = csv.writer(csv_file)
 	csv_writer.writerow(tableAll.text)
 		
