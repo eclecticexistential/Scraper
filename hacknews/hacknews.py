@@ -6,6 +6,7 @@ import re
 python = []
 selenium = []
 react = []
+javascript = []
 
 def get_python(name, array):
 	source = requests.get('https://news.ycombinator.com/item?id=18354503').text
@@ -26,3 +27,4 @@ def get_python(name, array):
 get_python('ython', python)
 get_python('elenium', selenium)
 get_python('eact', react)
+get_python('avascript', javascript)
