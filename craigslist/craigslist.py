@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
 import datetime
 import calendar
-from time import strptime
+import time
 import requests
 import csv
 import re
+import random
 
 cities = []
-job_links = []
 date = datetime.datetime.today().strftime('%m-%d')
 day = int(date.replace('-','')[2:])
 mtn = int(date.replace('-','')[:2])
@@ -42,6 +42,7 @@ def get_cities():
 					cities.append(city)
 			
 def get_software(city):
+	job_links = []
 	url = 'https://{0}.craigslist.org/d/software-qa-dba-etc/search/sof'.format(city)
 	source = requests.get(url).text
 	soup = BeautifulSoup(source, 'lxml')
@@ -58,10 +59,19 @@ def get_software(city):
 			if pattern or pattern2:
 				details = requests.get(get_link.get('href')).text
 				job_links.append(get_link.get('href'))
+	return job_links
 	
 def get_web(city):
+	job_links = []
 	url = 'https://{0}.craigslist.org/d/web-html-info-design/search/web'.format(city)
-	source = requests.get(url).text
+	headers = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'accept-encoding': 'gzip, deflate, br',
+        'accept-language': 'en-US,en;q=0.8',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+    }
+	source = requests.get(url, headers=headers).text
 	soup = BeautifulSoup(source, 'lxml')
 	for title in soup.find_all('p', class_='result-info'):
 		get_date = title.find('time', class_='result-date')
@@ -74,15 +84,87 @@ def get_web(city):
 			pattern = re.search(r'loper', title)
 			if pattern:
 				job_links.append(get_link.get('href'))
+	return job_links
 			
 def display_info():
 	get_cities()
+	final_set = []
 	for city in cities:
-		get_software(city)
-		get_web(city)
-		break
-	print(job_links)
+		url = 'https://{0}.craigslist.org'.format(city)
+		source = requests.get(url)
+		sof = get_software(city)
+		web = get_web(city)
+		job_links = sof+web
+		amount = len(job_links)
+		if amount > 0:
+			for link in job_links:
+				link = link.replace('\n', '')
+				link = link.replace('\r', '')
+				final_set.append(link)
+			time.sleep(random.randint(10,50))
+	csv_file = open('Jobs/sofWeb.csv', 'wb')
+	csv_writer = csv.writer(csv_file)
+	final_set = final_set.replace('\n', '')
+	final_set = final_set.replace('\r', '')
+	csv_writer.writerow(final_set)
+		
+# display_info()
 	
-display_info()
-	
-	
+# cd downloads/coding/python/beautifulsoup/craigslist
+
+def write_file():
+	array = []
+	with open('Jobs/sofWeb.csv', 'rb') as f:
+		x = f.readlines()
+		for y in x:
+			a = y.decode()
+			a = a.replace('\n', '')
+			a = a.replace('\r', '')
+			array.append(a)
+	csv_file = open('Jobs/sofWeb2.csv', 'w')
+	csv_writer = csv.writer(csv_file)
+	csv_writer.writerow(array)
+		
+#write_file()
+
+def read_file():
+	returnArray = []
+	with open('Jobs/final.csv', 'w') as write:
+		csv_writer = csv.writer(write)
+		csv_writer.writerow(['Title', 'Link'])
+		with open('Jobs/sofWeb.csv', 'r') as f:
+			reader = csv.reader(f)
+			headers = {
+			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+			'accept-encoding': 'gzip, deflate, br',
+			'accept-language': 'en-US,en;q=0.8',
+			'upgrade-insecure-requests': '1',
+			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+			}
+			for key,row in enumerate(reader):
+				if len(row) > 0:
+					source = requests.get(row[0], headers=headers).text
+					soup = BeautifulSoup(source, 'lxml')
+					data = soup.find('span', {'id':'titletextonly'})
+					returnArray.append(data.text)
+					links = soup.find_all('a')
+					for link in links:
+						href = link.get('href')
+						if href not in [None,'#','/']:
+							if len(href) > 15:
+								if 'craigslist' not in href:
+									if 'google' not in href:
+										if href[0] != '/':
+											returnArray.append(href)
+					email = soup.find('section', {'id':'postingbody'})
+					pattern = re.search(r'[a-zA-Z0-9]*@.*com', email.text)
+					if pattern:
+						returnArray.append(pattern.group())
+				if len(returnArray) == 1:
+					returnArray = []
+				if len(returnArray) > 1:
+					csv_writer.writerow([returnArray[0], returnArray[1]])
+					returnArray = []
+		
+		
+read_file()
