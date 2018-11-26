@@ -88,50 +88,28 @@ def get_web(city):
 			
 def display_info():
 	get_cities()
-	final_set = []
-	for city in cities:
-		url = 'https://{0}.craigslist.org'.format(city)
-		source = requests.get(url)
-		sof = get_software(city)
-		web = get_web(city)
-		job_links = sof+web
-		amount = len(job_links)
-		if amount > 0:
-			for link in job_links:
-				link = link.replace('\n', '')
-				link = link.replace('\r', '')
-				final_set.append(link)
-			time.sleep(random.randint(10,50))
-	csv_file = open('Jobs/sofWeb.csv', 'wb')
-	csv_writer = csv.writer(csv_file)
-	final_set = final_set.replace('\n', '')
-	final_set = final_set.replace('\r', '')
-	csv_writer.writerow(final_set)
-		
-# display_info()
+	with open('Jobs/sofWeb.csv', 'w') as write:
+		csv_writer = csv.writer(write)
+		for city in cities:
+			url = 'https://{0}.craigslist.org'.format(city)
+			source = requests.get(url)
+			sof = get_software(city)
+			web = get_web(city)
+			job_links = sof+web
+			amount = len(job_links)
+			if amount > 0:
+				for link in job_links:
+					csv_writer.writerow([city, link])
+				time.sleep(random.randint(10,50))
 	
 # cd downloads/coding/python/beautifulsoup/craigslist
 
-def write_file():
-	array = []
-	with open('Jobs/sofWeb.csv', 'rb') as f:
-		x = f.readlines()
-		for y in x:
-			a = y.decode()
-			a = a.replace('\n', '')
-			a = a.replace('\r', '')
-			array.append(a)
-	csv_file = open('Jobs/sofWeb2.csv', 'w')
-	csv_writer = csv.writer(csv_file)
-	csv_writer.writerow(array)
-		
-#write_file()
-
 def read_file():
+	#display_info()
 	returnArray = []
 	with open('Jobs/final.csv', 'w') as write:
 		csv_writer = csv.writer(write)
-		csv_writer.writerow(['Title', 'Link'])
+		csv_writer.writerow(['Title', 'City', 'Link'])
 		with open('Jobs/sofWeb.csv', 'r') as f:
 			reader = csv.reader(f)
 			headers = {
@@ -143,7 +121,7 @@ def read_file():
 			}
 			for key,row in enumerate(reader):
 				if len(row) > 0:
-					source = requests.get(row[0], headers=headers).text
+					source = requests.get(row[1], headers=headers).text
 					soup = BeautifulSoup(source, 'lxml')
 					data = soup.find('span', {'id':'titletextonly'})
 					returnArray.append(data.text)
@@ -163,7 +141,7 @@ def read_file():
 				if len(returnArray) == 1:
 					returnArray = []
 				if len(returnArray) > 1:
-					csv_writer.writerow([returnArray[0], returnArray[1]])
+					csv_writer.writerow([returnArray[0], row[0], returnArray[1]])
 					returnArray = []
 		
 		
