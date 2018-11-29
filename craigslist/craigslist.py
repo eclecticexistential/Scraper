@@ -54,6 +54,7 @@ def get_software(city):
 		if check_day > window and get_num_mtn == check_mtn:
 			get_link = title.find('a', class_='result-title')
 			title = get_link.text
+			#consider removing from both
 			pattern = re.search(r'oftware', title)
 			pattern2 = re.search(r'loper', title)
 			if pattern or pattern2:

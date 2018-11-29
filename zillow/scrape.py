@@ -7,7 +7,7 @@ page_count = []
 
 
 def info_loop(url_link):
-    csv_file = open('zillow_scrape.csv', 'w')
+    csv_file = open('zillow_scrapeNov.csv', 'w')
     csv_writer = csv.writer(csv_file)
     current_page = 1
     get_data(url_link, current_page, csv_writer)
@@ -51,7 +51,7 @@ def get_data(url_link, current_page, csv_writer):
 
 
 def who_knew():
-    with open('zillow_scrape.csv') as csv_file:
+    with open('zillow_scrapeNov.csv') as csv_file:
         reader = csv.reader(csv_file)
         headers = next(reader)
         for row in reader:
@@ -67,7 +67,7 @@ def who_knew():
                         # print(goog_search + tot_url + goog_end)
 
 
-info_loop('https://www.zillow.com/homes/for_sale/KY/house,land,townhouse_type/24_rid/1-_beds/1-_baths/0-17000_price/0-68_mp/priced_sort/42.884014,-77.014161,32.481963,-92.021485_rect/5_zm/0_mmm/')
+info_loop('https://www.zillow.com/homes/for_sale/KY/house,land,townhouse_type/24_rid/1-_beds/1-_baths/0-20000_price/0-68_mp/priced_sort/42.884014,-77.014161,32.481963,-92.021485_rect/5_zm/0_mmm/')
 who_knew()
 # source = requests.get('https://eclecticexistential.github.io').text
 # soup = BeautifulSoup(source, 'lxml')

@@ -9,18 +9,15 @@ var fs = require('fs'),
 fs.readFile(filePath, {encoding: 'utf-8'}, function (err,data){
 	var reg = /https.*html/g;
 	if(!err){
-		let matches = data.match(reg)
-		let email = /[a-zA-Z0-9]*@.*com/g;
-		for(i=0;i<matches.length;i++){
-			driver.get(matches[1]);
-			let area = driver.wait(selenium.until.elementLocated(selenium.By.id('postingbody')))
-			area.getText().then(function(text){
-				let attached = text.match(email)
-				console.log(attached)
-			})
-			break
-		}
+		driver.get(matches['https://cincinnati.craigslist.org/sof/d/software-engineer-remote/6749997413.html']);
+		let textArea = driver.wait(selenium.until.elementLocated(selenium.By.id('postingbody')))
+		let replyBtn = driver.wait(selenium.until.elementLocated(selenium.By.className('reply_button js-only')))
+		replyBtn.click()
+		let neededInfo = driver.wait(selenium.until.elementLocated(selenium.By.className('mailapp')))
+		console.log(neededInfo.getText())
 	} else{
 		console.log(err);
 	}
 });
+
+
