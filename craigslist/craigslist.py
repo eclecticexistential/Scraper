@@ -101,12 +101,12 @@ def display_info():
 			if amount > 0:
 				for link in job_links:
 					csv_writer.writerow([city, link])
-				time.sleep(random.randint(10,50))
+				time.sleep(random.randint(20,60))
 	
 # cd downloads/coding/python/beautifulsoup/craigslist
 
 def read_file():
-	#display_info()
+	display_info()
 	returnArray = []
 	with open('Jobs/final.csv', 'w') as write:
 		csv_writer = csv.writer(write)
