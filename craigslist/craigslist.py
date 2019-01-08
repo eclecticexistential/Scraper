@@ -57,7 +57,9 @@ def get_software(city):
 			#consider removing from both
 			pattern = re.search(r'oftware', title)
 			pattern2 = re.search(r'loper', title)
-			if pattern or pattern2:
+			pattern3 = re.search(r'grammer', title)
+			pattern4 = re.search(r'nalyst', title)
+			if pattern or pattern2 or pattern3 or pattern4:
 				details = requests.get(get_link.get('href')).text
 				job_links.append(get_link.get('href'))
 	return job_links
@@ -101,12 +103,12 @@ def display_info():
 			if amount > 0:
 				for link in job_links:
 					csv_writer.writerow([city, link])
-				time.sleep(random.randint(20,60))
+				time.sleep(random.randint(27,150))
 	
 # cd downloads/coding/python/beautifulsoup/craigslist
 
 def read_file():
-	display_info()
+	#display_info()
 	returnArray = []
 	with open('Jobs/final.csv', 'w') as write:
 		csv_writer = csv.writer(write)
