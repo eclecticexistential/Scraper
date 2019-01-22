@@ -127,7 +127,10 @@ def read_file():
 					source = requests.get(row[1], headers=headers).text
 					soup = BeautifulSoup(source, 'lxml')
 					data = soup.find('span', {'id':'titletextonly'})
-					returnArray.append(data.text)
+					try:
+						returnArray.append(data.text)
+					except AttributeError:
+						pass
 					links = soup.find_all('a')
 					for link in links:
 						href = link.get('href')
@@ -138,9 +141,12 @@ def read_file():
 										if href[0] != '/':
 											returnArray.append(href)
 					email = soup.find('section', {'id':'postingbody'})
-					pattern = re.search(r'[a-zA-Z0-9]*@.*com', email.text)
-					if pattern:
-						returnArray.append(pattern.group())
+					try:
+						pattern = re.search(r'[a-zA-Z0-9]*@.*', email.text)
+						if pattern:
+							returnArray.append(pattern.group())
+					except AttributeError:
+						pass
 				if len(returnArray) == 1:
 					returnArray = []
 				if len(returnArray) > 1:
