@@ -4,7 +4,7 @@ import csv
 import re
 
 def get_python():
-	source = requests.get('https://news.ycombinator.com/item?id=18807017').text
+	source = requests.get('https://news.ycombinator.com/item?id=19055166').text
 	soup = BeautifulSoup(source, 'lxml')
 	csv_file = open('remoteJan.csv', 'w')
 	csv_writer = csv.writer(csv_file)
